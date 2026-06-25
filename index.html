@@ -453,7 +453,7 @@
                         <input type="text" id="boxCode" placeholder="e.g., BOX001" required>
                     </div>
                     <div class="form-group">
-                        <label for="quantity"><i class="fas fa-sort-numeric-up"></i> Affected Quantity <span class="required">*</span></label>
+                        <label for="quantity"><i class="fas fa-sort-numeric-up"></i> Quantity <span class="required">*</span></label>
                         <input type="number" id="quantity" min="1" placeholder="Number of items" required>
                     </div>
                     <div class="form-group">
@@ -893,13 +893,29 @@
 
                 formData.append('data', JSON.stringify(data));
 
-                this.mediaItems.forEach((item, index) => {
-                    const ext = item.file.type.split('/')[1] || 'jpg';
-                    const name = item.type === 'image' 
-                        ? `SKU_${sku}_${String(index + 1).padStart(2, '0')}.${ext}`
-                        : `SKU_${sku}_video.mp4`;
-                    formData.append('media', item.file, name);
-                });
+                // Convert files to base64 for sending to GAS
+                for (let i = 0; i < this.mediaItems.length; i++) {
+                    const item = this.mediaItems[i];
+                    try {
+                        const reader = new FileReader();
+                        const fileData = await new Promise((resolve) => {
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(item.file);
+                        });
+                        const base64Data = fileData.split(',')[1];
+                        
+                        const fileObj = {
+                            bytes: base64Data,
+                            filename: item.file.name,
+                            mimeType: item.file.type
+                        };
+                        formData.append('media', JSON.stringify(fileObj));
+                    } catch (err) {
+                        console.error('Error reading file:', err);
+                        this.showStatus('Error reading file: ' + err.message, 'error');
+                        return;
+                    }
+                }
 
                 // Submit
                 const submitBtn = document.getElementById('submitBtn');
