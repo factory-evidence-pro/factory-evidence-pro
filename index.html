@@ -4,15 +4,425 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>🏭 Factory Evidence Pro - PH</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/mobile.css">
+    <!-- Font Awesome for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f0f4f8;
+            color: #1a2332;
+            padding: 16px;
+            line-height: 1.6;
+        }
+        
+        #app {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 18px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        header {
+            text-align: center;
+            padding: 0 0 20px 0;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            color: #1a365d;
+        }
+        
+        header h1 i {
+            color: #e67e22;
+            margin-right: 8px;
+        }
+        
+        .subtitle {
+            color: #4a6b8a;
+            font-size: 14px;
+        }
+        
+        .ph-time {
+            font-size: 14px;
+            color: #2d4a6b;
+            background: #ebf4ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .ph-time i {
+            margin-right: 6px;
+            color: #e67e22;
+        }
+        
+        .form-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #2d4a6b;
+        }
+        
+        label i {
+            margin-right: 6px;
+            color: #3182ce;
+            width: 18px;
+        }
+        
+        .required {
+            color: #e53e3e;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #dce4ec;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #3182ce;
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .media-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px 0;
+            border: 2px dashed #bcd4e8;
+        }
+        
+        .media-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .media-header h3 {
+            font-size: 16px;
+            color: #1a365d;
+        }
+        
+        .media-header h3 i {
+            color: #e67e22;
+            margin-right: 6px;
+        }
+        
+        .media-counter {
+            background: #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        #cameraPreview {
+            width: 100%;
+            border-radius: 12px;
+            background: #1a202c;
+            display: none;
+            margin-bottom: 12px;
+            max-height: 300px;
+        }
+        
+        .media-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .media-controls button {
+            padding: 12px 4px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            background: #edf2f7;
+            color: #2d4a6b;
+        }
+        
+        .media-controls button i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+        
+        .media-controls button:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-primary {
+            background: #3182ce !important;
+            color: white !important;
+        }
+        
+        .btn-danger {
+            background: #fc8181 !important;
+            color: white !important;
+        }
+        
+        .btn-success {
+            background: #38a169 !important;
+            color: white !important;
+        }
+        
+        #cameraActions, #recordingActions {
+            display: none;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        #cameraActions button, #recordingActions button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        #cameraActions button i, #recordingActions button i {
+            margin-right: 6px;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .media-item {
+            position: relative;
+            aspect-ratio: 1;
+            background: #edf2f7;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .remove-btn i {
+            font-size: 12px;
+        }
+        
+        .type-badge {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .seq-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(255,255,255,0.9);
+            color: #1a2332;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            pointer-events: none;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: #1a365d;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-submit i {
+            margin-right: 8px;
+        }
+        
+        .btn-submit:hover {
+            background: #2a4a7a;
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status-message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .status-message i {
+            margin-right: 8px;
+        }
+        
+        .status-message.success {
+            display: block;
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+        
+        .status-message.error {
+            display: block;
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .status-message.info {
+            display: block;
+            background: #bee3f8;
+            color: #1a365d;
+            border-left: 4px solid #3182ce;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 8px;
+        }
+        
+        .hint i {
+            margin-right: 4px;
+        }
+        
+        @media (max-width: 480px) {
+            #app {
+                padding: 16px 12px;
+            }
+            
+            .date-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .media-controls {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 6px;
+            }
+            
+            .media-controls button {
+                font-size: 12px;
+                padding: 10px 4px;
+                min-height: 44px;
+            }
+            
+            .btn-submit {
+                font-size: 16px;
+                padding: 14px;
+            }
+            
+            input, textarea {
+                font-size: 16px;
+                padding: 12px;
+            }
+            
+            .media-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <header>
-            <h1>🏭 Factory Evidence Pro</h1>
-            <p class="subtitle">🇵🇭 Philippines Timezone</p>
-            <div id="phTimeDisplay" class="ph-time">Loading PH time...</div>
+            <h1><i class="fas fa-industry"></i> Factory Evidence Pro</h1>
+            <p class="subtitle"><i class="fas fa-flag"></i> Philippines Timezone</p>
+            <div id="phTimeDisplay" class="ph-time"><i class="fas fa-clock"></i> Loading PH time...</div>
         </header>
 
         <main>
@@ -21,33 +431,33 @@
                 <section class="form-section">
                     <div class="date-row">
                         <div class="form-group">
-                            <label for="fclDate">FCL Date <span class="required">*</span></label>
+                            <label for="fclDate"><i class="fas fa-calendar-check"></i> FCL Date <span class="required">*</span></label>
                             <input type="date" id="fclDate" required>
                         </div>
                         <div class="form-group">
-                            <label for="chinaDate">China Date <span class="required">*</span></label>
+                            <label for="chinaDate"><i class="fas fa-calendar-alt"></i> China Date <span class="required">*</span></label>
                             <input type="date" id="chinaDate" required>
                         </div>
                     </div>
-                    <p class="hint">📅 Dates are in Philippines time (UTC+8)</p>
+                    <p class="hint"><i class="fas fa-info-circle"></i> Dates are in Philippines time (UTC+8)</p>
                 </section>
 
                 <!-- Form Fields -->
                 <section class="form-section">
                     <div class="form-group">
-                        <label for="sku">SKU Number <span class="required">*</span></label>
+                        <label for="sku"><i class="fas fa-barcode"></i> SKU Number <span class="required">*</span></label>
                         <input type="text" id="sku" placeholder="e.g., ABC123" required>
                     </div>
                     <div class="form-group">
-                        <label for="boxCode">Box Code <span class="required">*</span></label>
+                        <label for="boxCode"><i class="fas fa-box"></i> Box Code <span class="required">*</span></label>
                         <input type="text" id="boxCode" placeholder="e.g., BOX001" required>
                     </div>
                     <div class="form-group">
-                        <label for="quantity">Quantity <span class="required">*</span></label>
+                        <label for="quantity"><i class="fas fa-sort-numeric-up"></i> Quantity <span class="required">*</span></label>
                         <input type="number" id="quantity" min="1" placeholder="Number of items" required>
                     </div>
                     <div class="form-group">
-                        <label for="remarks">Remarks</label>
+                        <label for="remarks"><i class="fas fa-pen"></i> Remarks</label>
                         <textarea id="remarks" placeholder="Optional notes about issues/damage"></textarea>
                     </div>
                 </section>
@@ -55,57 +465,480 @@
                 <!-- Media Section -->
                 <section class="media-section">
                     <div class="media-header">
-                        <h3>📎 Media Evidence</h3>
-                        <span class="media-counter" id="mediaCounter">0 items</span>
+                        <h3><i class="fas fa-photo-video"></i> Media Evidence</h3>
+                        <span class="media-counter" id="mediaCounter"><i class="fas fa-images"></i> 0 items</span>
                     </div>
 
-                    <!-- Camera Preview -->
                     <video id="cameraPreview" autoplay muted playsinline></video>
 
-                    <!-- Controls -->
                     <div class="media-controls">
-                        <button type="button" id="cameraBtn" class="btn-primary">📷 Camera</button>
-                        <button type="button" id="recordBtn">🎥 Record</button>
-                        <button type="button" id="uploadBtn">⬆️ Upload</button>
-                        <button type="button" id="clearMediaBtn" class="btn-danger">🗑️ Clear</button>
+                        <button type="button" id="cameraBtn" class="btn-primary"><i class="fas fa-camera"></i> Camera</button>
+                        <button type="button" id="recordBtn"><i class="fas fa-video"></i> Record</button>
+                        <button type="button" id="uploadBtn"><i class="fas fa-upload"></i> Upload</button>
+                        <button type="button" id="clearMediaBtn" class="btn-danger"><i class="fas fa-trash-alt"></i> Clear</button>
                     </div>
 
-                    <!-- Camera Actions -->
-                    <div id="cameraActions" style="display:none;">
-                        <button type="button" id="capturePhotoBtn" class="btn-primary">📸 Capture</button>
-                        <button type="button" id="stopCameraBtn">⏹ Stop</button>
+                    <div id="cameraActions">
+                        <button type="button" id="capturePhotoBtn" class="btn-primary"><i class="fas fa-camera-retro"></i> Capture</button>
+                        <button type="button" id="stopCameraBtn"><i class="fas fa-stop"></i> Stop</button>
                     </div>
 
-                    <!-- Recording Actions -->
-                    <div id="recordingActions" style="display:none;">
-                        <button type="button" id="startRecordBtn" class="btn-danger">🔴 Start Recording</button>
-                        <button type="button" id="stopRecordBtn">⏹ Stop</button>
+                    <div id="recordingActions">
+                        <button type="button" id="startRecordBtn" class="btn-danger"><i class="fas fa-circle"></i> Start</button>
+                        <button type="button" id="stopRecordBtn"><i class="fas fa-stop"></i> Stop</button>
                     </div>
 
-                    <!-- Hidden file input -->
                     <input type="file" id="fileInput" class="hidden" accept="image/*,video/*" multiple>
 
-                    <!-- Media Gallery -->
                     <div id="mediaGallery" class="media-grid"></div>
 
-                    <p class="hint">📸 Multiple images • 🎥 Up to 1 video (100MB max) • 🇵🇭 PH Time</p>
+                    <p class="hint"><i class="fas fa-image"></i> Multiple images • <i class="fas fa-video"></i> Up to 1 video (100MB max) • <i class="fas fa-flag"></i> PH Time</p>
                 </section>
 
-                <!-- Submit -->
                 <div class="submit-area">
-                    <button type="submit" id="submitBtn" class="btn-submit">📤 Submit Evidence</button>
+                    <button type="submit" id="submitBtn" class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Evidence</button>
                 </div>
             </form>
 
-            <!-- Status Messages -->
             <div id="statusMessage" class="status-message"></div>
         </main>
     </div>
 
-    <script src="config/config.js"></script>
-    <script src="js/validation.js"></script>
-    <script src="js/media.js"></script>
-    <script src="js/camera.js"></script>
-    <script src="js/app.js"></script>
+    <script>
+        // Configuration
+        const CONFIG = {
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbzzmPmhQOqkjbC6sFtYp66UNcr3jVv25pjZdJuWmq9ZyLrmS32vyCqzNCJU9ABxC3hCYg/exec',
+            MAIN_FOLDER_ID: '1T_ViuMgRMoS3Ny3ktjubyjjhAMfWgUPJ',
+            TIMEZONE: 'Asia/Manila',
+            MAX_VIDEO_SIZE: 100 * 1024 * 1024,
+            MAX_VIDEOS: 1
+        };
+
+        // Main Application
+        class EvidenceApp {
+            constructor() {
+                this.mediaItems = [];
+                this.cameraStream = null;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+                this.isRecording = false;
+                this.isCameraActive = false;
+                
+                this.init();
+            }
+
+            init() {
+                // Set default dates
+                const phTime = this.getPhilippinesTime();
+                const today = phTime.toISOString().split('T')[0];
+                document.getElementById('fclDate').value = today;
+                document.getElementById('chinaDate').value = today;
+
+                this.bindEvents();
+                this.renderGallery();
+                this.updateCounter();
+                this.updatePHTimeDisplay();
+
+                // Update PH time every minute
+                setInterval(() => this.updatePHTimeDisplay(), 60000);
+            }
+
+            getPhilippinesTime() {
+                return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+            }
+
+            updatePHTimeDisplay() {
+                const phTime = this.getPhilippinesTime();
+                const options = { 
+                    timeZone: 'Asia/Manila', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true 
+                };
+                document.getElementById('phTimeDisplay').innerHTML = `<i class="fas fa-clock"></i> ${phTime.toLocaleString('en-US', options)}`;
+            }
+
+            bindEvents() {
+                document.getElementById('evidenceForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitForm();
+                });
+
+                document.getElementById('cameraBtn').addEventListener('click', () => this.toggleCamera());
+                document.getElementById('capturePhotoBtn').addEventListener('click', () => this.capturePhoto());
+                document.getElementById('stopCameraBtn').addEventListener('click', () => this.stopCamera());
+                
+                document.getElementById('recordBtn').addEventListener('click', () => this.toggleRecording());
+                document.getElementById('startRecordBtn').addEventListener('click', () => this.startRecording());
+                document.getElementById('stopRecordBtn').addEventListener('click', () => this.stopRecording());
+                
+                document.getElementById('uploadBtn').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    const files = e.target.files;
+                    for (let file of files) {
+                        const type = file.type.startsWith('image/') ? 'image' : 
+                                   (file.type.startsWith('video/') ? 'video' : null);
+                        if (type) {
+                            this.addMediaItem(file, type);
+                        }
+                    }
+                    this.updateCounter();
+                    e.target.value = '';
+                });
+
+                document.getElementById('clearMediaBtn').addEventListener('click', () => {
+                    this.clearAllMedia();
+                    this.updateCounter();
+                    this.showStatus('<i class="fas fa-check-circle"></i> All media cleared', 'info');
+                });
+            }
+
+            addMediaItem(file, type) {
+                if (type === 'video') {
+                    const existingVideo = this.mediaItems.find(item => item.type === 'video');
+                    if (existingVideo) {
+                        this.showStatus('<i class="fas fa-exclamation-circle"></i> Only one video allowed. Remove existing video first.', 'error');
+                        return false;
+                    }
+                    if (file.size > CONFIG.MAX_VIDEO_SIZE) {
+                        this.showStatus('<i class="fas fa-exclamation-circle"></i> Video too large (max 100MB)', 'error');
+                        return false;
+                    }
+                }
+                const url = URL.createObjectURL(file);
+                this.mediaItems.push({ type, file, url });
+                this.renderGallery();
+                this.updateCounter();
+                this.showStatus(`<i class="fas fa-check-circle"></i> ${type === 'image' ? 'Image' : 'Video'} added!`, 'success');
+                return true;
+            }
+
+            removeMediaItem(index) {
+                if (index >= 0 && index < this.mediaItems.length) {
+                    URL.revokeObjectURL(this.mediaItems[index].url);
+                    this.mediaItems.splice(index, 1);
+                    this.renderGallery();
+                    this.updateCounter();
+                    this.showStatus('<i class="fas fa-info-circle"></i> Media removed', 'info');
+                }
+            }
+
+            clearAllMedia() {
+                this.mediaItems.forEach(item => URL.revokeObjectURL(item.url));
+                this.mediaItems = [];
+                this.renderGallery();
+                this.updateCounter();
+            }
+
+            renderGallery() {
+                const gallery = document.getElementById('mediaGallery');
+                gallery.innerHTML = '';
+                
+                this.mediaItems.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'media-item';
+
+                    if (item.type === 'image') {
+                        const img = document.createElement('img');
+                        img.src = item.url;
+                        div.appendChild(img);
+                    } else {
+                        const video = document.createElement('video');
+                        video.src = item.url;
+                        video.muted = true;
+                        video.playsInline = true;
+                        video.addEventListener('click', () => {
+                            if (video.paused) video.play();
+                            else video.pause();
+                        });
+                        div.appendChild(video);
+                        
+                        const overlay = document.createElement('div');
+                        overlay.className = 'video-overlay';
+                        overlay.innerHTML = '<i class="fas fa-play"></i>';
+                        div.appendChild(overlay);
+                    }
+
+                    const seqBadge = document.createElement('span');
+                    seqBadge.className = 'seq-badge';
+                    seqBadge.textContent = `#${index + 1}`;
+                    div.appendChild(seqBadge);
+
+                    const badge = document.createElement('span');
+                    badge.className = 'type-badge';
+                    badge.textContent = item.type.toUpperCase();
+                    div.appendChild(badge);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.removeMediaItem(index);
+                    });
+                    div.appendChild(removeBtn);
+
+                    gallery.appendChild(div);
+                });
+            }
+
+            updateCounter() {
+                document.getElementById('mediaCounter').innerHTML = `<i class="fas fa-images"></i> ${this.mediaItems.length} items`;
+            }
+
+            showStatus(message, type = 'info') {
+                const status = document.getElementById('statusMessage');
+                status.innerHTML = message;
+                status.className = `status-message ${type}`;
+                status.style.display = 'block';
+                
+                if (type === 'success' || type === 'info') {
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            async toggleCamera() {
+                if (this.isCameraActive) {
+                    this.stopCamera();
+                } else {
+                    await this.startCamera();
+                }
+            }
+
+            async startCamera() {
+                try {
+                    this.cameraStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' },
+                        audio: false
+                    });
+                    
+                    const preview = document.getElementById('cameraPreview');
+                    preview.srcObject = this.cameraStream;
+                    preview.style.display = 'block';
+                    this.isCameraActive = true;
+                    document.getElementById('cameraActions').style.display = 'flex';
+                    document.getElementById('cameraBtn').innerHTML = '<i class="fas fa-stop"></i> Stop';
+                    this.showStatus('<i class="fas fa-info-circle"></i> Camera ready!', 'info');
+                } catch (error) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Camera access denied. Use upload instead.', 'error');
+                }
+            }
+
+            stopCamera() {
+                if (this.cameraStream) {
+                    this.cameraStream.getTracks().forEach(track => track.stop());
+                    this.cameraStream = null;
+                }
+                if (this.isRecording) {
+                    this.stopRecording();
+                }
+                const preview = document.getElementById('cameraPreview');
+                preview.srcObject = null;
+                preview.style.display = 'none';
+                this.isCameraActive = false;
+                document.getElementById('cameraActions').style.display = 'none';
+                document.getElementById('cameraBtn').innerHTML = '<i class="fas fa-camera"></i> Camera';
+            }
+
+            capturePhoto() {
+                if (!this.isCameraActive || !this.cameraStream) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Camera not active. Start camera first.', 'error');
+                    return;
+                }
+
+                const track = this.cameraStream.getVideoTracks()[0];
+                if (!track) return;
+
+                const imageCapture = new ImageCapture(track);
+                imageCapture.takePhoto()
+                    .then(blob => {
+                        const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                        this.addMediaItem(file, 'image');
+                    })
+                    .catch(() => {
+                        // Fallback
+                        const preview = document.getElementById('cameraPreview');
+                        const canvas = document.createElement('canvas');
+                        canvas.width = preview.videoWidth || 640;
+                        canvas.height = preview.videoHeight || 480;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(preview, 0, 0);
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                                this.addMediaItem(file, 'image');
+                            }
+                        }, 'image/jpeg');
+                    });
+            }
+
+            async toggleRecording() {
+                if (!this.isCameraActive) {
+                    await this.startCamera();
+                    setTimeout(() => this.startRecording(), 500);
+                } else if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    this.startRecording();
+                }
+            }
+
+            async startRecording() {
+                if (!this.isCameraActive || !this.cameraStream) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Start camera first.', 'error');
+                    return;
+                }
+
+                try {
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const combinedStream = new MediaStream([
+                        ...this.cameraStream.getVideoTracks(),
+                        ...audioStream.getAudioTracks()
+                    ]);
+
+                    this.mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
+                    this.recordedChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) this.recordedChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/mp4' });
+                        if (blob.size > 0) {
+                            const file = new File([blob], `video_${Date.now()}.mp4`, { type: 'video/mp4' });
+                            this.addMediaItem(file, 'video');
+                        }
+                        this.recordedChunks = [];
+                        combinedStream.getTracks().forEach(t => t.stop());
+                    };
+
+                    this.mediaRecorder.start(1000);
+                    this.isRecording = true;
+                    document.getElementById('recordingActions').style.display = 'flex';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop"></i> Recording...';
+                    this.showStatus('<i class="fas fa-circle" style="color:red;"></i> Recording... Tap Stop when done.', 'info');
+                } catch (error) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Could not access audio. Recording video only.', 'info');
+                    // Fallback: record without audio
+                    this.mediaRecorder = new MediaRecorder(this.cameraStream, { mimeType: 'video/mp4' });
+                    this.recordedChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) this.recordedChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/mp4' });
+                        if (blob.size > 0) {
+                            const file = new File([blob], `video_${Date.now()}.mp4`, { type: 'video/mp4' });
+                            this.addMediaItem(file, 'video');
+                        }
+                        this.recordedChunks = [];
+                    };
+
+                    this.mediaRecorder.start(1000);
+                    this.isRecording = true;
+                    document.getElementById('recordingActions').style.display = 'flex';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop"></i> Recording...';
+                }
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+                    document.getElementById('recordingActions').style.display = 'none';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-video"></i> Record';
+                    this.showStatus('<i class="fas fa-info-circle"></i> Recording stopped.', 'info');
+                }
+            }
+
+            async submitForm() {
+                // Validate
+                const sku = document.getElementById('sku').value.trim();
+                const boxCode = document.getElementById('boxCode').value.trim();
+                const quantity = document.getElementById('quantity').value.trim();
+                const fclDate = document.getElementById('fclDate').value;
+                const chinaDate = document.getElementById('chinaDate').value;
+
+                if (!sku) { this.showStatus('<i class="fas fa-exclamation-circle"></i> SKU is required.', 'error'); return; }
+                if (!boxCode) { this.showStatus('<i class="fas fa-exclamation-circle"></i> Box Code is required.', 'error'); return; }
+                if (!quantity || parseInt(quantity) < 1) { this.showStatus('<i class="fas fa-exclamation-circle"></i> Quantity must be at least 1.', 'error'); return; }
+                if (!fclDate) { this.showStatus('<i class="fas fa-exclamation-circle"></i> FCL Date is required.', 'error'); return; }
+                if (!chinaDate) { this.showStatus('<i class="fas fa-exclamation-circle"></i> China Date is required.', 'error'); return; }
+                if (this.mediaItems.length === 0) { this.showStatus('<i class="fas fa-exclamation-circle"></i> Please add at least one image or video.', 'error'); return; }
+
+                // Prepare data
+                const phTime = this.getPhilippinesTime();
+                const formData = new FormData();
+                const data = {
+                    sku,
+                    boxCode,
+                    quantity: parseInt(quantity),
+                    fclDate,
+                    chinaDate,
+                    remarks: document.getElementById('remarks').value.trim(),
+                    timestamp: phTime.toISOString()
+                };
+
+                formData.append('data', JSON.stringify(data));
+
+                this.mediaItems.forEach((item, index) => {
+                    const ext = item.file.type.split('/')[1] || 'jpg';
+                    const name = item.type === 'image' 
+                        ? `SKU_${sku}_${String(index + 1).padStart(2, '0')}.${ext}`
+                        : `SKU_${sku}_video.mp4`;
+                    formData.append('media', item.file, name);
+                });
+
+                // Submit
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                this.showStatus('<i class="fas fa-info-circle"></i> Uploading to Google Drive...', 'info');
+
+                try {
+                    const response = await fetch(CONFIG.GAS_URL, {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'no-cors'
+                    });
+
+                    this.showStatus('<i class="fas fa-check-circle"></i> Evidence submitted successfully! Check your Google Drive.', 'success');
+                    
+                    // Reset form
+                    document.getElementById('sku').value = '';
+                    document.getElementById('boxCode').value = '';
+                    document.getElementById('quantity').value = '';
+                    document.getElementById('remarks').value = '';
+                    this.clearAllMedia();
+                    this.updateCounter();
+                    if (this.isCameraActive) this.stopCamera();
+                    
+                } catch (error) {
+                    this.showStatus(`<i class="fas fa-exclamation-circle"></i> Error: ${error.message}`, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Evidence';
+                }
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new EvidenceApp();
+            window.app = app;
+        });
+    </script>
 </body>
 </html>
