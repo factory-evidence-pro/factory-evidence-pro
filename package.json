@@ -1,0 +1,19 @@
+{
+  "name": "factory-evidence-pro",
+  "version": "1.0.0",
+  "description": "Factory container issue documentation system",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve frontend",
+    "deploy": "bash scripts/deploy.sh",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "factory",
+    "evidence",
+    "container",
+    "documentation"
+  ],
+  "author": "",
+  "license": "MIT"
+}
