@@ -873,7 +873,7 @@
                 if (!chinaDate) { this.showStatus('China Date is required.', 'error'); return; }
                 if (this.mediaItems.length === 0) { this.showStatus('Please add at least one image or video.', 'error'); return; }
 
-                // Prepare data - FIXED: Send files as blobs directly, not as base64
+                // Prepare data - Send files as blobs directly
                 const formData = new FormData();
                 
                 // Add data as JSON
@@ -887,7 +887,7 @@
                 };
                 formData.append('data', JSON.stringify(data));
 
-                // Add files directly as blobs - this is the FIX!
+                // Add files directly as blobs
                 for (let i = 0; i < this.mediaItems.length; i++) {
                     const item = this.mediaItems[i];
                     formData.append('media', item.file);
