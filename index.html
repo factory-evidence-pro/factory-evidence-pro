@@ -6,6 +6,7 @@
     <title>🏭 Factory Evidence Pro - PH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Keep your existing styles - they're fine */
         * {
             margin: 0;
             padding: 0;
@@ -506,7 +507,7 @@
     <script>
         // Configuration
         const CONFIG = {
-            GAS_URL: 'https://script.google.com/macros/s/AKfycbxAX0DaQaOons4tyiAdj7KNjtbF9yNZmeQWUyQPxUyvA-G7nlM7q4xlysSalM8AFYPIag/exec',
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbzzmPmhQOqkjbC6sFtYp66UNcr3jVv25pjZdJuWmq9ZyLrmS32vyCqzNCJU9ABxC3hCYg/exec',
             MAIN_FOLDER_ID: '1T_ViuMgRMoS3Ny3ktjubyjjhAMfWgUPJ',
             TIMEZONE: 'Asia/Manila',
             MAX_VIDEO_SIZE: 100 * 1024 * 1024,
@@ -656,4 +657,305 @@
                         div.appendChild(video);
                         const overlay = document.createElement('div');
                         overlay.className = 'video-overlay';
-                        overlay.innerHTML = '<i class="fas fa-play"></
+                        overlay.innerHTML = '<i class="fas fa-play"></i>';
+                        div.appendChild(overlay);
+                    }
+
+                    const seqBadge = document.createElement('span');
+                    seqBadge.className = 'seq-badge';
+                    seqBadge.textContent = `#${index + 1}`;
+                    div.appendChild(seqBadge);
+
+                    const badge = document.createElement('span');
+                    badge.className = 'type-badge';
+                    badge.textContent = item.type.toUpperCase();
+                    div.appendChild(badge);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.removeMediaItem(index);
+                    });
+                    div.appendChild(removeBtn);
+
+                    gallery.appendChild(div);
+                });
+            }
+
+            updateCounter() {
+                document.getElementById('mediaCounter').innerHTML = `<i class="fas fa-images"></i> ${this.mediaItems.length} items`;
+            }
+
+            showStatus(message, type = 'info') {
+                const status = document.getElementById('statusMessage');
+                status.innerHTML = message;
+                status.className = `status-message ${type}`;
+                status.style.display = 'block';
+                
+                if (type === 'success' || type === 'info') {
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            async toggleCamera() {
+                if (this.isCameraActive) {
+                    this.stopCamera();
+                } else {
+                    await this.startCamera();
+                }
+            }
+
+            async startCamera() {
+                try {
+                    this.cameraStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' },
+                        audio: false
+                    });
+                    
+                    const preview = document.getElementById('cameraPreview');
+                    preview.srcObject = this.cameraStream;
+                    preview.style.display = 'block';
+                    this.isCameraActive = true;
+                    document.getElementById('cameraActions').style.display = 'flex';
+                    document.getElementById('cameraBtn').innerHTML = '<i class="fas fa-stop"></i> Stop';
+                    this.showStatus('<i class="fas fa-info-circle"></i> Camera ready!', 'info');
+                } catch (error) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Camera access denied. Use upload instead.', 'error');
+                }
+            }
+
+            stopCamera() {
+                if (this.cameraStream) {
+                    this.cameraStream.getTracks().forEach(track => track.stop());
+                    this.cameraStream = null;
+                }
+                if (this.isRecording) {
+                    this.stopRecording();
+                }
+                const preview = document.getElementById('cameraPreview');
+                preview.srcObject = null;
+                preview.style.display = 'none';
+                this.isCameraActive = false;
+                document.getElementById('cameraActions').style.display = 'none';
+                document.getElementById('cameraBtn').innerHTML = '<i class="fas fa-camera"></i> Camera';
+            }
+
+            capturePhoto() {
+                if (!this.isCameraActive || !this.cameraStream) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Camera not active.', 'error');
+                    return;
+                }
+
+                const track = this.cameraStream.getVideoTracks()[0];
+                if (!track) return;
+
+                const imageCapture = new ImageCapture(track);
+                imageCapture.takePhoto()
+                    .then(blob => {
+                        const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                        this.addMediaItem(file, 'image');
+                    })
+                    .catch(() => {
+                        const preview = document.getElementById('cameraPreview');
+                        const canvas = document.createElement('canvas');
+                        canvas.width = preview.videoWidth || 640;
+                        canvas.height = preview.videoHeight || 480;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(preview, 0, 0);
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                                this.addMediaItem(file, 'image');
+                            }
+                        }, 'image/jpeg');
+                    });
+            }
+
+            async toggleRecording() {
+                if (!this.isCameraActive) {
+                    await this.startCamera();
+                    setTimeout(() => this.startRecording(), 500);
+                } else if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    this.startRecording();
+                }
+            }
+
+            async startRecording() {
+                if (!this.isCameraActive || !this.cameraStream) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Start camera first.', 'error');
+                    return;
+                }
+
+                try {
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const combinedStream = new MediaStream([
+                        ...this.cameraStream.getVideoTracks(),
+                        ...audioStream.getAudioTracks()
+                    ]);
+
+                    this.mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
+                    this.recordedChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) this.recordedChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/mp4' });
+                        if (blob.size > 0) {
+                            const file = new File([blob], `video_${Date.now()}.mp4`, { type: 'video/mp4' });
+                            this.addMediaItem(file, 'video');
+                        }
+                        this.recordedChunks = [];
+                        combinedStream.getTracks().forEach(t => t.stop());
+                    };
+
+                    this.mediaRecorder.start(1000);
+                    this.isRecording = true;
+                    document.getElementById('recordingActions').style.display = 'flex';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop"></i> Recording...';
+                    this.showStatus('<i class="fas fa-circle" style="color:red;"></i> Recording... Tap Stop when done.', 'info');
+                } catch (error) {
+                    this.showStatus('<i class="fas fa-exclamation-circle"></i> Recording video only (no audio).', 'info');
+                    this.mediaRecorder = new MediaRecorder(this.cameraStream, { mimeType: 'video/mp4' });
+                    this.recordedChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) this.recordedChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/mp4' });
+                        if (blob.size > 0) {
+                            const file = new File([blob], `video_${Date.now()}.mp4`, { type: 'video/mp4' });
+                            this.addMediaItem(file, 'video');
+                        }
+                        this.recordedChunks = [];
+                    };
+
+                    this.mediaRecorder.start(1000);
+                    this.isRecording = true;
+                    document.getElementById('recordingActions').style.display = 'flex';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop"></i> Recording...';
+                }
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+                    document.getElementById('recordingActions').style.display = 'none';
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-video"></i> Record';
+                    this.showStatus('<i class="fas fa-info-circle"></i> Recording stopped.', 'info');
+                }
+            }
+
+            async submitForm() {
+                // Validate
+                const sku = document.getElementById('sku').value.trim();
+                const boxCode = document.getElementById('boxCode').value.trim();
+                const quantity = document.getElementById('quantity').value.trim();
+                const remarks = document.getElementById('remarks').value.trim();
+                const fclDate = document.getElementById('fclDate').value;
+                const chinaDate = document.getElementById('chinaDate').value;
+
+                if (!sku) { this.showStatus('SKU Code is required.', 'error'); return; }
+                if (!boxCode) { this.showStatus('Box Code is required.', 'error'); return; }
+                if (!quantity || parseInt(quantity) < 1) { this.showStatus('Affected Quantity must be at least 1.', 'error'); return; }
+                if (!remarks) { this.showStatus('Product Issue Remarks are required.', 'error'); return; }
+                if (!fclDate) { this.showStatus('FCL Date is required.', 'error'); return; }
+                if (!chinaDate) { this.showStatus('China Date is required.', 'error'); return; }
+                if (this.mediaItems.length === 0) { this.showStatus('Please add at least one image or video.', 'error'); return; }
+
+                // Prepare data
+                const phTime = this.getPhilippinesTime();
+                const formData = new FormData();
+                const data = {
+                    sku,
+                    boxCode,
+                    quantity: parseInt(quantity),
+                    fclDate,
+                    chinaDate,
+                    remarks: remarks,
+                    timestamp: phTime.toISOString()
+                };
+
+                formData.append('data', JSON.stringify(data));
+
+                // Convert files to base64
+                for (let i = 0; i < this.mediaItems.length; i++) {
+                    const item = this.mediaItems[i];
+                    try {
+                        const reader = new FileReader();
+                        const fileData = await new Promise((resolve) => {
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(item.file);
+                        });
+                        const base64Data = fileData.split(',')[1];
+                        
+                        const fileObj = {
+                            bytes: base64Data,
+                            filename: item.file.name,
+                            mimeType: item.file.type
+                        };
+                        formData.append('media', JSON.stringify(fileObj));
+                    } catch (err) {
+                        console.error('Error reading file:', err);
+                        this.showStatus('Error reading file: ' + err.message, 'error');
+                        return;
+                    }
+                }
+
+                // Submit - FIXED: Removed mode: 'no-cors'
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                this.showStatus('<i class="fas fa-info-circle"></i> Uploading to Google Drive...', 'info');
+
+                try {
+                    const response = await fetch(CONFIG.GAS_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    console.log('Response:', result);
+
+                    if (result.success) {
+                        this.showStatus('✅ Evidence submitted successfully! Check your Google Drive.', 'success');
+                        
+                        // Reset form
+                        document.getElementById('sku').value = '';
+                        document.getElementById('boxCode').value = '';
+                        document.getElementById('quantity').value = '';
+                        document.getElementById('remarks').value = '';
+                        this.clearAllMedia();
+                        this.updateCounter();
+                        if (this.isCameraActive) this.stopCamera();
+                    } else {
+                        this.showStatus('❌ Error: ' + (result.error || 'Unknown error'), 'error');
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    this.showStatus('❌ Network error: ' + error.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Evidence';
+                }
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new EvidenceApp();
+            window.app = app;
+        });
+    </script>
+</body>
+</html>
