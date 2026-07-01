@@ -873,10 +873,9 @@
                 if (!chinaDate) { this.showStatus('China Date is required.', 'error'); return; }
                 if (this.mediaItems.length === 0) { this.showStatus('Please add at least one image or video.', 'error'); return; }
 
-                // Prepare data - Send files as blobs directly
+                // Prepare data
+                const phTime = this.getPhilippinesTime();
                 const formData = new FormData();
-                
-                // Add data as JSON
                 const data = {
                     sku,
                     boxCode,
@@ -885,12 +884,33 @@
                     chinaDate,
                     remarks: remarks
                 };
+                
+                // Add data as JSON
                 formData.append('data', JSON.stringify(data));
 
-                // Add files directly as blobs
+                // Convert files to base64 and add with unique keys
                 for (let i = 0; i < this.mediaItems.length; i++) {
                     const item = this.mediaItems[i];
-                    formData.append('media', item.file);
+                    try {
+                        const reader = new FileReader();
+                        const fileData = await new Promise((resolve) => {
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(item.file);
+                        });
+                        const base64Data = fileData.split(',')[1];
+                        
+                        const fileObj = {
+                            bytes: base64Data,
+                            filename: item.file.name,
+                            mimeType: item.file.type
+                        };
+                        // Use unique key for each file
+                        formData.append('file_' + i, JSON.stringify(fileObj));
+                    } catch (err) {
+                        console.error('Error reading file:', err);
+                        this.showStatus('Error reading file: ' + err.message, 'error');
+                        return;
+                    }
                 }
 
                 // Submit
